@@ -17,8 +17,9 @@ MergeMaps(m1, m2) {
 SubtractMaps(m1, m2) {
     result := Map()
     for key, value in m1
-        if !m2.Has(key)
+        if (!m2.Has(key)) {
             result[key] := value
+        }
     return result
 }
 RoundDS(x) {
@@ -1234,16 +1235,18 @@ simSelector := Map(
 ;{ Functions
 GetGuiTargetList() {
     list := []
-    for k, v in PkmnDataAPI
-    if (PkmnDataAPI[k].games.Has(player.game) && PkmnDataAPI[k].id < 10000)
-        list.Push(k)
+    for k, v in pkmnDataAPI {
+        if (pkmnDataAPI[k].games.Has(player.game) && pkmnDataAPI[k].id < 10000)
+            list.Push(k)
+    }
     return list
 }
 GetGuiMeList() {
     list := []
-    for k, v in PkmnDataAPI
-    if (PkmnDataAPI[k].generation <= player.gen && PkmnDataAPI[k].id < 10000)
-        list.Push(k)
+    for k, v in pkmnDataAPI {
+        if (pkmnDataAPI[k].generation <= player.gen && pkmnDataAPI[k].id < 10000)
+            list.Push(k)
+    }
     return list
 }
 GetGuiBallList() {
