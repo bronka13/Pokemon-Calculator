@@ -4,7 +4,14 @@
     Created: Mar 20, 2026
 */
 
+;{ Headers
+#Requires AutoHotkey v2+
 #SingleInstance Force
+;}
+
+;{ Libraries
+#Include <JSON>
+;}
 
 ;{ Functions
 MergeMaps(m1, m2) {
