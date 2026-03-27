@@ -10,7 +10,7 @@
 ;}
 
 ;{ Libraries
-#Include <JSON>
+#Include <JSON> ; https://github.com/G33kDude/cJson.ahk
 ;}
 
 ;{ Functions
