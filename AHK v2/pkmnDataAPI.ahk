@@ -1,3 +1,33 @@
+/*
+    Title: pCalc — pkmnDataAPI
+    Version 1.2     ; added "game" property
+    Created: Mar 24, 2026
+
+    Data Structure:
+    pkmnDataAPI["bulbasaur"] := {
+            id: 1,                                          ; PokeAPI identifier
+            name: "bulbasaur",
+            species: "bulbasaur",
+            species_id: 1,                                  ; id in National Dex
+            generation: 1,                                  ; generation where Pkmn species was introduced
+            type_1: "grass",                                ; type
+            type_2: "poison",                               ; second type, if any
+            height: 7,                                      ; x in decimeters (dm)
+            weight: 6.9,                                    ; x in kg
+            gender_rate: x,                                 ; x in 8 eggs is female
+            capture_rate: x,                                ; range from 0-255 (min is usually 3)
+            games: Map(game1, true, game2, true),           ; games in which Pkmn may be found in the wild
+            ability_1: "Overgrow", 
+            ability_2: "", 
+            ability_hidden: "Chlorophyll", 
+            HP:    45, 
+            Atk:   49, 
+            Def:   49, 
+            SpAtk: 65, 
+            SpDef: 65, 
+            Spe:   45 }
+*/
+
 pkmnDataAPI := Map()
 
 pkmnDataAPI["bulbasaur"] := { id: 1, name: "bulbasaur", species: "bulbasaur", species_id: 1, generation: 1, type_1: "grass", type_2: "poison", height: 7, weight: 6.9, gender_rate: 1, capture_rate: 45, games: Map("ultra-moon", true, "ultra-sun", true), ability_1: "Overgrow", ability_2: "", ability_hidden: "Chlorophyll", HP: 45, Atk: 49, Def: 49, SpAtk: 65, SpDef: 65, Spe: 45 }

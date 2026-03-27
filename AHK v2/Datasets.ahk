@@ -1,4 +1,8 @@
-﻿;;;;;;;;;;;;;
+﻿/*
+    Title: pCalc — Datasets
+    Version: 2              ; switched from .CSV-based to PokeAPI-based
+    Created: Mar 21, 2026
+*/
 
 #Include pkmnDataAPI.ahk
 CatchRatesAPI := Map()
@@ -55,7 +59,6 @@ gen8_CatchRates := Map("rayquaza", 45)
 SwSh_CatchRates := Map("necrozma", 255)
 LZA_CatchRates := Map("mewtwo", 20, "beldum", 20, "metang", 20, "metagross", 20, "latias", 45, "latios", 45, "kyogre", 45, "groudon", 45, "rayquaza", 45, "heatran", 45, "darkrai", 45, "cobalion", 45, "terrakion", 45, "virizion", 45, "keldeo", 45, "meloetta", 45, "genesect", 45, "zygarde", 255, "diancie", 20, "hoopa", 45, "volcanion", 45, "magearna", 45, "marshadow", 45, "zeraora", 45, "meltan", 45, "melmetal", 45, "kleavor", 20)
 ;}
-
 CatchRates := Map(
     1, Map(
         "base", CatchRatesAPI,
