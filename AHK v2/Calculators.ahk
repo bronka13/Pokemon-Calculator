@@ -17,9 +17,9 @@ class gen1 {
 
     ;{ Aux Methods
     static StatusValue(status) {
-        if (status = 'Asleep' || status = 'Frozen')
+        if (status = "Asleep" || status = "Frozen")
             v1 := 25, v2 := 10
-        else if (status = 'Poisoned' || status = 'Burned' || status = 'Paralyzed')
+        else if (status = "Poisoned" || status = "Burned" || status = "Paralyzed")
             v1 := 12, v2 := 5
         else
             v1 := 0, v2 := 0
@@ -82,7 +82,7 @@ class gen1 {
         } else if (res = 3) {
             msg := "Shoot! It was so close too!"
         }
-        MsgBox msg
+        return msg
     }
     ;}
 }
@@ -202,7 +202,7 @@ class gen2 {
         } else if (res = 3) {
             msg := "Shoot! It was so close, too!"
         }
-        MsgBox msg
+        return msg
     }
     ;}
 }
@@ -309,7 +309,7 @@ class gen3 {
         } else if (res = 3) {
             msg := "Shoot! It was so close, too!"
         }
-        MsgBox msg
+        return msg
     }
     ;}
 }
@@ -449,7 +449,7 @@ class gen4 {
         } else if (res = 3) {
             msg := "Shoot! It was so close, too!"
         }
-        MsgBox msg
+        return msg
     }
     ;}
 }
@@ -591,7 +591,7 @@ class gen5 {
         } else if (res = 3) {
             msg := "Aargh! Almost had it!"
         }
-        MsgBox msg
+        return msg
     }
     ;}
 }
@@ -698,7 +698,7 @@ class gen6 {
         } else if (res = 3) {
             msg := "Shoot! It was so close, too!"
         }
-        MsgBox msg
+        return msg
     }
     ;}
 }
@@ -858,7 +858,7 @@ class gen7 {
         } else if (res = 3) {
             msg := "Shoot! It was so close, too!"
         }
-        MsgBox msg
+        return msg
     }
     ;}
 }

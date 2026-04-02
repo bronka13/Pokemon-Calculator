@@ -2,7 +2,9 @@ import json
 import re
 from pathlib import Path
 
-BASE_PATH = Path("api-data-2024-05-07/data/api/v2")
+BASE_PATH = Path(r"C:\Scripts\Pokémon Calculator\api-data-2024-05-07\data\api\v2")
+
+JSON_PATH = Path(r"C:\Scripts\Pokémon Calculator\json") 
 
 # Ordem das propriedades no Map AHK: edite esta lista para mudar a ordem
 AHK_ORDER = [
@@ -26,7 +28,8 @@ AHK_ORDER = [
     "Def",
     "SpAtk",
     "SpDef",
-    "Spe"
+    "Spe",
+    "Special"
 ]
 
 # Mapeamento de nomes Python -> nomes AHK (ex.: species_name -> species)
@@ -248,6 +251,8 @@ def extract_basic(pokemon, species):
     for v in mapping.values():
         stats.setdefault(v, 0)
 
+    special = get_special(pid)
+
     # abilities
     ability_1 = ""
     ability_2 = ""
@@ -303,8 +308,27 @@ def extract_basic(pokemon, species):
         "capture_rate": capture_rate,
         "games": games_list,               # lista de version names
         "games_details": games_details,    # opcional, pode ser grande
-        "games_source": games_source
+        "games_source": games_source,
+        "Special": special
     }
+
+def get_special(pokemon_id):
+    special_val = 0
+    json_file = JSON_PATH / f"{pokemon_id}.json"
+    if json_file.exists():
+        with open(json_file, encoding="utf-8") as f:
+            pokemon = json.load(f)
+        # percorre todos os past_stats
+        for ps in pokemon.get("past_stats", []):
+            # só pega se for da geração I
+            if ps.get("generation", {}).get("name") == "generation-i":
+                for s in ps.get("stats", []):
+                    if s["stat"]["name"] == "special":
+                        special_val = s.get("base_stat", 0)
+                        break
+            if special_val:
+                break
+    return special_val
 
 def ahk_value(v):
     """
@@ -369,9 +393,9 @@ def save_output(text, filename="pkmnDataAPI 2.ahk"):
 
 if __name__ == "__main__":
     # Para gerar apenas os primeiros 151, descomente e ajuste:
-    # ids_to_run = sorted(get_all_ids())[:151]
-    # result = generate_ahk_map(limit_ids=ids_to_run)
+    ids_to_run = sorted(get_all_ids())[:151]
+    result = generate_ahk_map(limit_ids=ids_to_run)
 
-    result = generate_ahk_map()
+    # result = generate_ahk_map()
     save_output(result)
     print("Arquivo gerado com sucesso!")

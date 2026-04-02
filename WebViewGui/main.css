@@ -1,0 +1,86 @@
+@import url("tailwind_colors.css");
+
+:root {
+    --hpHigh: var(--lime500);
+    --hpMid: var(--amber500);
+    --hpLow: var(--red600);
+    --hpBg: var(--neutral700);
+}
+
+#main {
+    margin: 0;
+    background-color: #FFFFFF;
+    font-size: small;
+    font-family: 'Courier New', Courier, monospace;
+    color: #000000;
+}
+
+.battle-scene {
+    width: 640px;
+    height: 360px;
+    position: relative;
+    border: 2px solid #000;
+    margin: auto;
+}
+
+.container-tar {
+    position: absolute;
+    top: 10px;
+    right: 80px;
+    text-align: center;
+}
+
+.container-me {
+    position: absolute;
+    bottom: 10px;
+    left: 80px;
+    text-align: center;
+}
+
+
+.sprite-box {
+    width: 192px;
+    height: 192px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+.sprite {
+    max-width: none;
+    max-height: none;
+    transform: scale(2);
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    transform-origin: center;
+}
+
+.info-box {
+    background: rgba(255, 255, 255, 0.8);
+    border: 2px solid #333;
+    padding: 5px;
+    width: 150px;
+    border-radius: 5px;
+}
+
+.hp-bar-container {
+    width: 100%;
+    height: 12px;
+    background-color: var(--hpBg);
+    border: 2px solid #000;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 5px;
+}
+
+.hp-fill {
+    height: 100%;
+    background-color: var(--hpHigh);
+    transition: width 0.2s ease-out, background-color 0.3s;
+}
+
+.hp-text {
+    font-size: 10px;
+    font-weight: bold;
+    text-align: right;
+}

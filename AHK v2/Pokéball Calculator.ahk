@@ -71,7 +71,25 @@ HasFlag(flag, default := false) {
 #Include Class Objects.ahk
 #Include Calculators.ahk
 #Include AHK GUI.ahk
+#Include WebViewToo GUI.ahk
 ;}
+
+SavePokemon(tar) {
+    if player.gen = 1 {
+        line := tar.name "," tar.gender "," tar.level "," tar.shiny
+        . tar.ability "," tar.nature ","
+        . tar.IVs["HP"] "," tar.IVs["Atk"] "," tar.IVs["Def"] ","
+        . tar.IVs["Spe"] "," tar.IVs["Spc"]
+        . tar.date        
+    } else {
+        line := tar.name "," tar.gender "," tar.level "," tar.shiny
+        . tar.ability "," tar.nature ","
+        . tar.IVs["HP"] "," tar.IVs["Atk"] "," tar.IVs["Def"] ","
+        . tar.IVs["SpAtk"] "," tar.IVs["SpDef"] "," tar.IVs["Spe"] "," 
+        . tar.date
+    }
+    FileAppend line "`n", "Saved Pokemon.csv"
+}
 
 ;{ Debugging
 DebugCtx(tarName, meName := "charizard", meLevel := 50, meGender := "male",

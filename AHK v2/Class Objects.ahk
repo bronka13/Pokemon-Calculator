@@ -8,7 +8,7 @@
  * SAV file related values.
  */
 class player {
-    static game := "emerald"
+    static game := "heartgold"
     static gen := gameGen[player.game]
     ;{ Pokedex
     static Pokedex := Map()
@@ -124,18 +124,11 @@ class wildGenerator {
     static Generate(name, minLvl := 1, maxLvl := 1) {
         nature := wildGenerator.RandNature()
         return {
-            IVs: Map(
-                "HP", Random(0,31),
-                "Atk", Random(0,31),
-                "Def", Random(0,31),
-                "SpAtk", Random(0,31),
-                "SpDef", Random(0,31),
-                "Spe", Random(0,31)),
+            IVs: wildGenerator.RandIVs(),
             nature: nature,
             natureMod: wildGenerator.BuildNatureMod(nature),
-            gender: wildGenerator.RandGender(name),
             ability: wildGenerator.RandAbility(name),
-            level: wildGenerator.RandLevel(name, minLvl, maxLvl)
+            level: wildGenerator.RandLevel(name, minLvl, maxLvl),
         }
     }
 
@@ -152,11 +145,6 @@ class wildGenerator {
         }
         return mod
     }
-
-    static RandGender(name) {
-        return (Random(1,8) <= pkmnDataAPI[name].gender_rate) ? "female" : "male"
-    }
-
     static RandAbility(name) {
         data := pkmnDataAPI[name]
         if (data.ability_hidden != "") && (player.location = "Entree Forest" || player.location = "Hidden Grotto")
@@ -165,13 +153,32 @@ class wildGenerator {
             return data.ability_2
         return data.ability_1
     }
-
     static RandLevel(name, minLvl, maxLvl) {
         ; this would use the game's lookup table for location encounter maps
         ; minLvl := encounter.min_level
         ; maxLvl := encounter.max_level
         ; return Random(minLvl,maxLvl)
         return Random(20,40)
+    }
+    static RandIVs() {
+        if (player.gen <= 2) {
+            DVs := Map(
+                "HP", Random(0,15),
+                "Atk", Random(0,15),
+                "Def", Random(0,15),
+                "Spe", Random(0,15),
+                "Spc", Random(0,15) )
+            return DVs
+        } else {
+            IVs := Map(
+                "HP", Random(0,31),
+                "Atk", Random(0,31),
+                "Def", Random(0,31),
+                "SpAtk", Random(0,31),
+                "SpDef", Random(0,31),
+                "Spe", Random(0,31) )
+            return IVs
+        }
     }
 }
 
@@ -192,38 +199,121 @@ class wildGenerator {
 class target {
     __New(name, status := "", overrides := "") {
         this.name := name
-        this.type_1 := pkmnDataAPI[name].type_1
-        this.type_2 := pkmnDataAPI[name].type_2
 
         wild := wildGenerator.Generate(name)
         this.IVs := overrides.HasProp("IVs") ? overrides.IVs : wild.IVs
         this.nature := overrides.HasProp("nature") ? overrides.nature : wild.nature
         this.natureMod := overrides.HasProp("nature") ? wildGenerator.BuildNatureMod(this.nature) : wild.natureMod
-        this.gender := overrides.HasProp("gender") ? overrides.gender : wild.gender
         this.ability := overrides.HasProp("ability") ? overrides.ability : wild.ability
         this.level := overrides.HasProp("level") ? overrides.level : wild.level
 
-        this.EVs := Map("HP", 0, "Atk", 0, "Def", 0, "SpAtk", 0, "SpDef", 0, "Spe", 0)
-        this.stats := Map(
-            "HP", this.calcHP(),
-            "Atk", this.calcStat("Atk"), 
-            "Def", this.calcStat("Def"), 
-            "SpAtk", this.calcStat("SpAtk"), 
-            "SpDef", this.calcStat("SpDef"), 
-            "Spe", this.calcStat("Spe"))
-        this.statsBattle := MergeMaps(this.stats, Map())
-
         this.species := pkmnDataAPI[name].species
         this.weight := pkmnDataAPI[name].weight
+        this.height := pkmnDataAPI[name].height / 10
+
+        this.type_1 := pkmnDataAPI[name].type_1
+        this.type_2 := pkmnDataAPI[name].type_2
+        this.EVs := this.DetermineEVs()
+        this.stats := this.calcFullStats()
+        this.statsBattle := MergeMaps(this.stats, Map())
+
+        this.gender := this.DetermineGender(name)
+        this.shiny := this.isShiny()
+
         this.heldItem := ""
         this.status := status
+        this.date := A_Now
     }
 
+    DetermineEVs() {
+        if (player.gen <= 2)
+            return Map("HP", 0, "Atk", 0, "Def", 0, "Spe", 0, "Spc", 0)
+        else 
+            return Map("HP", 0, "Atk", 0, "Def", 0, "SpAtk", 0, "SpDef", 0, "Spe", 0)
+    }
+
+    ;{ Stats Calculators
     calcHP() {
         return Floor(((2*pkmnDataAPI[this.name].HP + this.IVs["HP"] + this.EVs["HP"]//4) * this.level) // 100) + this.level + 10
     }
     calcStat(stat) {
         return Floor((Floor((2*pkmnDataAPI[this.name].%stat% + this.IVs[stat] + this.EVs[stat]//4) * this.level // 100) + 5) * this.natureMod[stat])
+    }
+    gen1_calcHP() {
+        return Floor(((pkmnDataAPI[this.name].HP + this.IVs["HP"]) * 2 + Floor(Sqrt(this.EVs["HP"])/4)) * this.level / 100 ) + this.level + 10
+    }
+    gen1_calcStat(stat) {
+        return Floor(((pkmnDataAPI[this.name].%stat% + this.IVs[stat]) * 2 + Floor(Sqrt(this.EVs[stat])/4)) * this.level / 100 ) + 5
+    }
+    gen2_calcSpecial(stat) {
+        return Floor(((pkmnDataAPI[this.name].%stat% + this.IVs["Spc"]) * 2 + Floor(Sqrt(this.EVs["Spc"])/4)) * this.level / 100 ) + 5
+    }
+    calcFullStats() {
+        if (player.gen = 1) {
+            return Map(
+                "HP", this.gen1_calcHP(),
+                "Atk", this.gen1_calcStat("Atk"),
+                "Def", this.gen1_calcStat("Def"),
+                "Spe", this.gen1_calcStat("Spe"),
+                "Spc", this.gen1_calcStat("Spc"))
+        } else if (player.gen = 2) {
+            return Map(
+                "HP", this.gen1_calcHP(),
+                "Atk", this.gen1_calcStat("Atk"),
+                "Def", this.gen1_calcStat("Def"),
+                "SpAtk", this.gen2_calcSpecial("SpAtk"),
+                "SpDef", this.gen2_calcSpecial("SpDef"),
+                "Spe", this.gen1_calcStat("Spe"))
+        } else {
+            return Map(
+                "HP", this.calcHP(),
+                "Atk", this.calcStat("Atk"), 
+                "Def", this.calcStat("Def"), 
+                "SpAtk", this.calcStat("SpAtk"), 
+                "SpDef", this.calcStat("SpDef"), 
+                "Spe", this.calcStat("Spe"))
+        }
+    }
+    ;}
+
+    DetermineGender(name) {
+        if (pkmnDataAPI[name].gender_rate = -1) {
+            return "unknown"
+        } else if (player.gen = 2) {
+            if (pkmnDataAPI[name].gender_rate = 0)
+                return "male"
+            if ((pkmnDataAPI[name].gender_rate = 1) && (this.IVs["Atk"] <= 1))
+                return "female"
+            if ((pkmnDataAPI[name].gender_rate = 2) && (this.IVs["Atk"] <= 3))
+                return "female"
+            if ((pkmnDataAPI[name].gender_rate = 4) && (this.IVs["Atk"] <= 7))
+                return "female"
+            if ((pkmnDataAPI[name].gender_rate = 6) && (this.IVs["Atk"] <= 11))
+                return "female"
+            if (pkmnDataAPI[name].gender_rate = 8)
+                return "female"
+            else
+                return "male"
+        } else {
+            return (Random(1,8) <= pkmnDataAPI[name].gender_rate) ? "female" : "male"
+        }
+    }
+
+    isShiny() {
+        if (player.gen = 1)
+            return false
+        if (player.gen = 2) {
+            AtkDVs := Map(2,1, 3,1, 6,1, 7,1, 10,1, 11,1, 14,1, 15,1)
+            if (this.IVs["Spe"] = 10) && (this.IVs["Def"] = 10) && (this.IVs["Spc"] = 10) && (AtkDVs.Has(this.IVs["Atk"]))
+                return true
+            return false
+        } else if (player.gen > 2 && player.gen < 6) && (Random(1,8192) = 1) {
+            return true
+        } else if (player.gen >= 6)  && (Random(1,8192) <= 2) {
+            return true
+        } else {
+            return false
+        }
     }
 }
 
@@ -265,10 +355,8 @@ class context {
     }
 }
 
-/*
 ctx := context(
     target("sandslash", ""), 
     me("charizard", 52, "male"), 
     battle("single", "grass"), 
-    location("Route 10", "route", true)
-*/
+    location("Route 10", "route", true) )
